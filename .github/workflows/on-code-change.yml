@@ -1,0 +1,52 @@
+name: On Code Change (PR)
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+jobs:
+  static-analysis:
+    name: Static Analysis (linting, vulns)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: corepack enable
+      - uses: Jahia/jahia-modules-action/static-analysis@v2
+        with:
+          node_version: 18
+          auditci_level: critical
+
+  build:
+    name: Build Module
+    runs-on: self-hosted
+    env:
+      NEXUS_INTERNAL_URL: ${{ secrets.NEXUS_INTERNAL_URL }}
+    container:
+      image: jahia/cimg-mvn-cache:ga_cimg_openjdk_11.0.20-node
+      credentials:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: corepack enable
+      - uses: jahia/jahia-modules-action/build@v2
+        with:
+          mvn_settings_filepath: '.github/maven.settings.xml'
+          nexus_username: ${{ secrets.NEXUS_USERNAME }}
+          nexus_password: ${{ secrets.NEXUS_PASSWORD }}
+
+  sonar-analysis:
+    name: Sonar Analysis
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: corepack enable
+      - uses: jahia/jahia-modules-action/sonar-analysis@v2
+        with:
+          primary_release_branch: main
+          github_pr_id: ${{github.event.number}}
+          sonar_url: ${{ secrets.SONAR_URL }}
+          sonar_token: ${{ secrets.SONAR_TOKEN }}
+          mvn_settings_filepath: '.github/maven.settings.xml'
+          github_slug: 'Jahia/urlrewritefilter'
