@@ -9,5 +9,5 @@ The main differences with the original project:
 - project restructured to use Maven (instead of Ant)
 - JDK 11 used to build the project
 - dependencies upgraded (`junit`, `servlet-api`, `slf4j-api`)
-- `commons-logging` dependency replaced with `commons-httpclient`
+- only `slf4j` used for logging (but `log4j` used for tests)
 - line endings changed to LF
