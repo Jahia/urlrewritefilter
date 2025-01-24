@@ -35,10 +35,7 @@
 package org.tuckey.web.filters.urlrewrite;
 
 import org.tuckey.web.filters.urlrewrite.extend.RewriteMatch;
-import org.tuckey.web.filters.urlrewrite.utils.Log;
-import org.tuckey.web.filters.urlrewrite.utils.StringMatchingMatcher;
-import org.tuckey.web.filters.urlrewrite.utils.StringUtils;
-import org.tuckey.web.filters.urlrewrite.utils.TypeUtils;
+import org.tuckey.web.filters.urlrewrite.utils.*;
 import org.tuckey.web.filters.urlrewrite.json.JsonRewriteMatch;
 
 import javax.servlet.FilterChain;
@@ -125,6 +122,16 @@ public class Run {
             {HttpServletResponse.class}
     };
     private boolean filter = false;
+
+    private final ClassLoader classLoader;
+
+    public Run() {
+        this(null);
+    }
+
+    public Run(ClassLoader classLoader) {
+        this.classLoader = classLoader;
+    }
 
     /**
      * @see #initialise(ServletContext,Class) initialise
@@ -220,18 +227,11 @@ public class Run {
         if (loadClass) {
             if (paramClass == null) {
                 try {
-                    paramClass = Class.forName(param);
-                } catch (ClassNotFoundException e) {
-                    setError("could not find " + param + " got a " + e.toString(), e);
-                    return null;
-                } catch (NoClassDefFoundError e) {
-                    setError("could not find " + param + " got a " + e.toString(), e);
+                    paramClass = ClassLoaderUtils.loadClass(classStr, classLoader);
+                } catch (ClassNotFoundException | NoClassDefFoundError e) {
+                    setError("could not find " + param + " got a " + e, e);
                     return null;
                 }
-            }
-            if (paramClass == null) {
-                setError("could not find class of type " + param);
-                return null;
             }
         }
         if (log.isDebugEnabled()) {
@@ -249,12 +249,9 @@ public class Run {
         }
         Class runClass;
         try {
-            runClass = Class.forName(classStr);
-        } catch (ClassNotFoundException e) {
-            setError("could not find " + classStr + " got a " + e.toString(), e);
-            return;
-        } catch (NoClassDefFoundError e) {
-            setError("could not find " + classStr + " got a " + e.toString(), e);
+            runClass = ClassLoaderUtils.loadClass(classStr, classLoader);
+        } catch (ClassNotFoundException | NoClassDefFoundError e) {
+            setError("could not find " + classStr + " got a " + e, e);
             return;
         }
         try {

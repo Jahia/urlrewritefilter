@@ -36,6 +36,7 @@ package org.tuckey.web.filters.urlrewrite;
 
 import org.tuckey.web.filters.urlrewrite.extend.RewriteMatch;
 import org.tuckey.web.filters.urlrewrite.extend.RewriteRule;
+import org.tuckey.web.filters.urlrewrite.utils.ClassLoaderUtils;
 import org.tuckey.web.filters.urlrewrite.utils.Log;
 import org.tuckey.web.filters.urlrewrite.utils.StringUtils;
 
@@ -93,7 +94,15 @@ public class ClassRule implements Rule {
     private Method destroyMethod;
     private Method initMethod;
     private Method matchesMethod;
+    private final ClassLoader classLoader;
 
+    public ClassRule(ClassLoader classLoader) {
+        this.classLoader = classLoader;
+    }
+
+    public ClassRule() {
+        this(null);
+    }
 
     public RewrittenUrl matches(final String url, final HttpServletRequest hsRequest,
                                 final HttpServletResponse hsResponse, final RuleChain chain)
@@ -155,7 +164,7 @@ public class ClassRule implements Rule {
 
         Class ruleClass;
         try {
-            ruleClass = Class.forName(classStr);
+            ruleClass = ClassLoaderUtils.loadClass(classStr, classLoader);
         } catch (ClassNotFoundException e) {
             addError("could not find " + classStr + " got a " + e.toString(), e);
             return false;
@@ -318,5 +327,8 @@ public class ClassRule implements Rule {
         errors.add(s);
     }
 
-
+    @Override
+    public ClassLoader getClassLoader() {
+        return classLoader;
+    }
 }

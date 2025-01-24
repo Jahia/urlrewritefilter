@@ -107,8 +107,8 @@ public class Conf {
      *
      * @param fileName to display on status screen
      */
-    public Conf(ServletContext context, final InputStream inputStream, String fileName, String systemId) {
-        this(context, inputStream, fileName, systemId, false);
+    public Conf(ServletContext context, final InputStream inputStream, String fileName, String systemId, ClassLoader classLoader) {
+        this(context, inputStream, fileName, systemId, false, classLoader);
     }
 
     /**
@@ -118,7 +118,7 @@ public class Conf {
      * @param modRewriteStyleConf true if loading mod_rewrite style conf
      */
     public Conf(ServletContext context, final InputStream inputStream, String fileName, String systemId,
-                boolean modRewriteStyleConf) {
+                boolean modRewriteStyleConf, ClassLoader classLoader) {
         // make sure context is setup before calling initialise()
         this.context = context;
         this.fileName = fileName;
@@ -126,7 +126,7 @@ public class Conf {
         if (modRewriteStyleConf) {
             loadModRewriteStyle(inputStream);
         } else {
-            loadDom(inputStream);
+            loadDom(inputStream, classLoader);
         }
         if (docProcessed) initialise();
         loadedDate = new Date();
@@ -150,7 +150,7 @@ public class Conf {
         this.fileName = confUrl.getFile();
         this.confSystemId = confUrl.toString();
         try {
-            loadDom(confUrl.openStream());
+            loadDom(confUrl.openStream(), null);
         } catch (IOException e) {
             addError("Exception loading conf " + " " + e.getMessage(), e);
         }
@@ -159,7 +159,7 @@ public class Conf {
     }
 
     /**
-     * Constructor when run elements don't need to be initialised correctly, for docuementation etc.
+     * Constructor when run elements don't need to be initialised correctly, for documentation etc.
      */
     public Conf(InputStream inputStream, String conffile) {
         this(null, inputStream, conffile, conffile);
@@ -171,8 +171,9 @@ public class Conf {
      * Note, protected so that is can be extended.
      *
      * @param inputStream stream of the conf file to load
+     * @param classLoader classloader to use, if <code>null</code> will use the classloader that loaded this class
      */
-    protected synchronized void loadDom(final InputStream inputStream) {
+    protected synchronized void loadDom(final InputStream inputStream, ClassLoader classLoader) {
         if (inputStream == null) {
             log.error("inputstream is null");
             return;
@@ -204,7 +205,7 @@ public class Conf {
         try {
             log.debug("about to parse conf");
             Document doc = parser.parse(inputStream, confSystemId);
-            processConfDoc(doc);
+            processConfDoc(doc, classLoader);
 
         } catch (SAXParseException e) {
             addError("Parse error on line " + e.getLineNumber() + " " + e.getMessage(), e);
@@ -218,8 +219,10 @@ public class Conf {
      * Process dom document and populate Conf object.
      * <p/>
      * Note, protected so that is can be extended.
+     *
+     * @param classLoader classloader to use, if <code>null</code> will use the classloader that loaded this class
      */
-    protected void processConfDoc(Document doc) {
+    protected void processConfDoc(Document doc, ClassLoader classLoader) {
         Element rootElement = doc.getDocumentElement();
 
         if ("true".equalsIgnoreCase(getAttrValue(rootElement, "use-query-string"))) setUseQueryString(true);
@@ -238,11 +241,11 @@ public class Conf {
                     ((Element) node).getTagName().equals("rule")) {
                 Element ruleElement = (Element) node;
                 // we have a rule node
-                NormalRule rule = new NormalRule();
+                NormalRule rule = new NormalRule(classLoader);
 
                 processRuleBasics(ruleElement, rule);
                 procesConditions(ruleElement, rule);
-                processRuns(ruleElement, rule);
+                processRuns(ruleElement, rule, classLoader);
 
                 Node toNode = ruleElement.getElementsByTagName("to").item(0);
                 rule.setTo(getNodeValue(toNode));
@@ -259,7 +262,7 @@ public class Conf {
                     ((Element) node).getTagName().equals("class-rule")) {
                 Element ruleElement = (Element) node;
 
-                ClassRule classRule = new ClassRule();
+                ClassRule classRule = new ClassRule(classLoader);
                 if ("false".equalsIgnoreCase(getAttrValue(ruleElement, "enabled"))) classRule.setEnabled(false);
                 if ("false".equalsIgnoreCase(getAttrValue(ruleElement, "last"))) classRule.setLast(false);
                 classRule.setClassStr(getAttrValue(ruleElement, "class"));
@@ -272,13 +275,13 @@ public class Conf {
 
                 Element ruleElement = (Element) node;
                 // we have a rule node
-                OutboundRule rule = new OutboundRule();
+                OutboundRule rule = new OutboundRule(classLoader);
 
                 processRuleBasics(ruleElement, rule);
                 if ("true".equalsIgnoreCase(getAttrValue(ruleElement, "encodefirst"))) rule.setEncodeFirst(true);
 
                 procesConditions(ruleElement, rule);
-                processRuns(ruleElement, rule);
+                processRuns(ruleElement, rule, classLoader);
 
                 Node toNode = ruleElement.getElementsByTagName("to").item(0);
                 rule.setTo(getNodeValue(toNode));
@@ -294,11 +297,11 @@ public class Conf {
 
                 Element catchXMLElement = (Element) node;
                 // we have a rule node
-                CatchElem catchElem = new CatchElem();
+                CatchElem catchElem = new CatchElem(classLoader);
 
                 catchElem.setClassStr(getAttrValue(catchXMLElement, "class"));
 
-                processRuns(catchXMLElement, catchElem);
+                processRuns(catchXMLElement, catchElem, classLoader);
 
                 catchElems.add(catchElem);
 
@@ -338,13 +341,13 @@ public class Conf {
         }
     }
 
-    private static void processRuns(Element ruleElement, Runnable runnable) {
+    private static void processRuns(Element ruleElement, Runnable runnable, ClassLoader classLoader) {
         NodeList runNodes = ruleElement.getElementsByTagName("run");
         for (int j = 0; j < runNodes.getLength(); j++) {
             Node runNode = runNodes.item(j);
 
             if (runNode == null) continue;
-            Run run = new Run();
+            Run run = new Run(classLoader);
 
             if (runNode.getNodeType() == Node.ELEMENT_NODE) {
                 Element runElement = (Element) runNode;

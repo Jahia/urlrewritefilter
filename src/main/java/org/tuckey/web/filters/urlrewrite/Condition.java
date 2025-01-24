@@ -34,14 +34,7 @@
  */
 package org.tuckey.web.filters.urlrewrite;
 
-import org.tuckey.web.filters.urlrewrite.utils.Log;
-import org.tuckey.web.filters.urlrewrite.utils.NumberUtils;
-import org.tuckey.web.filters.urlrewrite.utils.RegexPattern;
-import org.tuckey.web.filters.urlrewrite.utils.StringMatchingMatcher;
-import org.tuckey.web.filters.urlrewrite.utils.StringMatchingPattern;
-import org.tuckey.web.filters.urlrewrite.utils.StringMatchingPatternSyntaxException;
-import org.tuckey.web.filters.urlrewrite.utils.StringUtils;
-import org.tuckey.web.filters.urlrewrite.utils.WildcardPattern;
+import org.tuckey.web.filters.urlrewrite.utils.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -498,11 +491,9 @@ public class Condition extends TypeConverter {
             log.debug("initialising instanceof condition");
             strValue = StringUtils.trim(strValue);
             try {
-                instanceOfClass = Class.forName(strValue);
-            } catch (ClassNotFoundException e) {
-                setError("could not find " + strValue + " got a " + e.toString());
-            } catch (NoClassDefFoundError e) {
-                setError("could not find " + strValue + " got a " + e.toString());
+                instanceOfClass = ClassLoaderUtils.loadClass(strValue, rule == null ? null : rule.getClassLoader());
+            } catch (ClassNotFoundException | NoClassDefFoundError e) {
+                setError("could not find " + strValue + " got a " + e);
             }
 
         } else {
