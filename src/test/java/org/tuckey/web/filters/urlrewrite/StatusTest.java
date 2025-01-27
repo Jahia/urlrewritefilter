@@ -60,7 +60,7 @@ public class StatusTest extends TestCase {
 
         MockRequest hsRequest = new MockRequest();
         InputStream is = ConfTest.class.getResourceAsStream(ConfTest.BASE_XML_PATH + "conf-test1.xml");
-        Conf conf = new Conf(new MockServletContext(), is, "conf-test1.xml", "conf-test1.xml");
+        Conf conf = new Conf(new MockServletContext(), is, "conf-test1.xml", "conf-test1.xml", null);
         assertTrue(conf.getErrors().toString(), conf.isOk());
         UrlRewriter urlRewriter = new UrlRewriter(conf);
         UrlRewriteFilter urlRewriteFilter = new UrlRewriteFilter();

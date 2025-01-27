@@ -23,7 +23,7 @@ public class SampleMultiUrlRewriteFilter extends UrlRewriteFilter {
     public void loadUrlRewriter(FilterConfig filterConfig) throws ServletException {
         // add configurations
         try {
-            Conf conf1 = new Conf(filterConfig.getServletContext(), new FileInputStream("someconf.xml"), "someconf.xml", "");
+            Conf conf1 = new Conf(filterConfig.getServletContext(), new FileInputStream("someconf.xml"), "someconf.xml", "", null);
             urlrewriters.add(new UrlRewriter(conf1));
 
             Conf conf2 = new SampleConfExt();

@@ -162,7 +162,7 @@ public class Conf {
      * Constructor when run elements don't need to be initialised correctly, for documentation etc.
      */
     public Conf(InputStream inputStream, String conffile) {
-        this(null, inputStream, conffile, conffile);
+        this(null, inputStream, conffile, conffile, null);
     }
 
     /**
