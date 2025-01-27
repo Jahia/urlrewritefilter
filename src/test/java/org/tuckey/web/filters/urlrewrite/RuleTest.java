@@ -36,6 +36,7 @@ package org.tuckey.web.filters.urlrewrite;
 
 import junit.framework.TestCase;
 import org.tuckey.web.filters.urlrewrite.utils.Log;
+import org.tuckey.web.testhelper.CustomClassLoader;
 import org.tuckey.web.testhelper.MockRequest;
 import org.tuckey.web.testhelper.MockResponse;
 import org.tuckey.web.testhelper.MockServletContext;
@@ -43,6 +44,7 @@ import org.tuckey.web.testhelper.MockServletContext;
 import javax.servlet.ServletException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URISyntaxException;
 import java.util.List;
 
 /**
@@ -750,6 +752,18 @@ public class RuleTest extends TestCase {
         assertNotNull("Should be not empty", rewrittenUrl.getTargetContext());
     }
 
+    public void testCustomClassLoader() throws InvocationTargetException, IOException, ServletException, URISyntaxException {
+        NormalRule rule = new NormalRule();
+        rule.setName("Rule with custom class loader");
+        Run run = new Run(new CustomClassLoader());
+        run.setClassStr("org.sample.CustomRun");
+        run.setMethodStr("foo(HttpServletRequest)");
+        rule.addRun(run);
+        rule.initialise(new MockServletContext());
+        MockRequest request = new MockRequest("/sample.html");
+        rule.matches(request.getRequestURI(), request, response);
 
+        assertTrue("The custom Run should be executed", (Boolean) request.getAttribute("foo executed"));
+    }
 
 }
