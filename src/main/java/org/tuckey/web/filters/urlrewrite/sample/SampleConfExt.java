@@ -12,13 +12,13 @@ public class SampleConfExt extends Conf {
         // do something
     }
 
-    protected synchronized void loadDom(InputStream inputStream, ClassLoader classLoader) {
+    protected synchronized void loadDom(InputStream inputStream) {
         // do something
-        super.loadDom(inputStream, classLoader);
+        super.loadDom(inputStream);
     }
 
     protected void processConfDoc(Document doc) {
         // do something else
-        super.processConfDoc(doc, null);
+        super.processConfDoc(doc);
     }
 }

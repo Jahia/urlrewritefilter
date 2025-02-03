@@ -279,7 +279,7 @@ public class UrlRewriteFilter implements Filter {
             }
 
         } else {
-            Conf conf = new Conf(context, inputStream, confPath, confUrlStr, modRewriteStyleConf, null);
+            Conf conf = new Conf(context, inputStream, confPath, confUrlStr, modRewriteStyleConf);
             checkConf(conf);
         }
     }

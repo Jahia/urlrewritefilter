@@ -10,6 +10,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import java.io.FileInputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class SampleMultiUrlRewriteFilter extends UrlRewriteFilter {
     public void loadUrlRewriter(FilterConfig filterConfig) throws ServletException {
         // add configurations
         try {
-            Conf conf1 = new Conf(filterConfig.getServletContext(), new FileInputStream("someconf.xml"), "someconf.xml", "", null);
+            Conf conf1 = new Conf(filterConfig.getServletContext(), new FileInputStream("someconf.xml"), "someconf.xml", "");
             urlrewriters.add(new UrlRewriter(conf1));
 
             Conf conf2 = new SampleConfExt();

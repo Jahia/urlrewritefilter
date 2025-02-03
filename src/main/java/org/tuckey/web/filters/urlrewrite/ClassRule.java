@@ -165,11 +165,8 @@ public class ClassRule implements Rule {
         Class ruleClass;
         try {
             ruleClass = ClassLoaderUtils.loadClass(classStr, classLoader);
-        } catch (ClassNotFoundException e) {
-            addError("could not find " + classStr + " got a " + e.toString(), e);
-            return false;
-        } catch (NoClassDefFoundError e) {
-            addError("could not find " + classStr + " got a " + e.toString(), e);
+        } catch (ClassNotFoundException | NoClassDefFoundError e) {
+            addError("could not find " + classStr + " got a " + e, e);
             return false;
         }
 

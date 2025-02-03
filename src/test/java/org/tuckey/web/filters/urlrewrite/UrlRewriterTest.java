@@ -373,7 +373,7 @@ public class UrlRewriterTest extends TestCase {
 
 
     public void testRuleChain() throws IOException, ServletException, InvocationTargetException {
-        Conf conf = new Conf(servletContext, null, null, null, null);
+        Conf conf = new Conf(servletContext, null, null, null);
 
         Run run = new Run();
         run.setClassStr(TestRunObj.class.getName());

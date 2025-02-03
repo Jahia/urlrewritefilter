@@ -107,6 +107,16 @@ public class Conf {
      *
      * @param fileName to display on status screen
      */
+    public Conf(ServletContext context, final InputStream inputStream, String fileName, String systemId) {
+        this(context, inputStream, fileName, systemId, null);
+    }
+
+    /**
+     * Constructor for use only when loading XML style configuration, using a custom class loader.
+     *
+     * @param fileName    to display on status screen
+     * @param classLoader classloader to use, if <code>null</code> will use the classloader that loaded this class
+     */
     public Conf(ServletContext context, final InputStream inputStream, String fileName, String systemId, ClassLoader classLoader) {
         this(context, inputStream, fileName, systemId, false, classLoader);
     }
@@ -116,6 +126,18 @@ public class Conf {
      *
      * @param fileName            to display on status screen
      * @param modRewriteStyleConf true if loading mod_rewrite style conf
+     */
+    public Conf(ServletContext context, final InputStream inputStream, String fileName, String systemId,
+                boolean modRewriteStyleConf) {
+        this(context, inputStream, fileName, systemId, modRewriteStyleConf, null);
+    }
+
+    /**
+     * Normal constructor, that supports a custom class loader.
+     *
+     * @param fileName            to display on status screen
+     * @param modRewriteStyleConf true if loading mod_rewrite style conf
+     * @param classLoader         classloader to use, if <code>null</code> will use the classloader that loaded this class
      */
     public Conf(ServletContext context, final InputStream inputStream, String fileName, String systemId,
                 boolean modRewriteStyleConf, ClassLoader classLoader) {
@@ -171,6 +193,17 @@ public class Conf {
      * Note, protected so that is can be extended.
      *
      * @param inputStream stream of the conf file to load
+     */
+    protected synchronized void loadDom(final InputStream inputStream) {
+        loadDom(inputStream, null);
+    }
+
+    /**
+     * Load the dom document from the inputstream, with an optional custom class loader
+     * <p/>
+     * Note, protected so that is can be extended.
+     *
+     * @param inputStream stream of the conf file to load
      * @param classLoader classloader to use, if <code>null</code> will use the classloader that loaded this class
      */
     protected synchronized void loadDom(final InputStream inputStream, ClassLoader classLoader) {
@@ -217,6 +250,15 @@ public class Conf {
 
     /**
      * Process dom document and populate Conf object.
+     * <p/>
+     * Note, protected so that is can be extended.
+     */
+    protected void processConfDoc(Document doc) {
+        processConfDoc(doc, null);
+    }
+
+    /**
+     * Process dom document and populate Conf object, using a custom class loader.
      * <p/>
      * Note, protected so that is can be extended.
      *

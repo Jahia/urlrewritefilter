@@ -59,7 +59,7 @@ public class ConfTest extends TestCase {
     public void testGoodNormalConf() throws FileNotFoundException {
         InputStream is = ConfTest.class.getResourceAsStream(BASE_XML_PATH + "conf-test1.xml");
         assertNotNull(is);
-        Conf conf = new Conf(new MockServletContext(), is, "conf-test1.xml", "conf-test1.xml", null);
+        Conf conf = new Conf(new MockServletContext(), is, "conf-test1.xml", "conf-test1.xml");
         assertTrue(conf.isOk());
         assertEquals("regex", conf.getDefaultMatchType());
         assertEquals(false, conf.isUseContext());
