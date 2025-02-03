@@ -1,130 +1,103 @@
-<project>
-
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.tuckey</groupId>
     <artifactId>urlrewritefilter</artifactId>
     <packaging>jar</packaging>
-    <version>3.2.0</version>
-    <name>UrlRewriteFilter</name>
-    <url>http://tuckey.org/urlrewrite/</url>
+    <version>3.2.0-jahia1-SNAPSHOT</version>
+    <name>UrlRewriteFilter (Jahia fork)</name>
+    <url>https://tuckey.org/urlrewrite/</url>
     <inceptionYear>2001</inceptionYear>
     <description>A Java Web Filter for any J2EE compliant web application server (such as Resin, Orion or Tomcat), which
         allows you to rewrite URLs before they get to your code. It is a very powerful tool just like Apache's
-        mod_rewrite.
+        mod_rewrite. This is a fork from the original UrlRewriteFilter project:
+        https://github.com/paultuckey/urlrewritefilter/.
     </description>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>11</java.version>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+
+        <!-- dependencies versions: -->
+        <commons-httpclient.version>3.1</commons-httpclient.version>
+        <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
+        <junit.version>4.13.2</junit.version>
+        <slf4j.version>2.0.16</slf4j.version>
+    </properties>
 
     <licenses>
         <license>
-            <name>BSD</name>
-            <url>http://www.opensource.org/licenses/bsd-license.php</url>
+            <name>2-Clause BSD License</name>
+            <url>https://opensource.org/license/BSD-2-Clause</url>
         </license>
     </licenses>
 
     <scm>
-        <connection>scm:svn:http://urlrewritefilter.googlecode.com/svn/trunk/</connection>
+        <connection>scm:git:git@github.com:Jahia/urlrewritefilter.git</connection>
+        <developerConnection>scm:git:git@github.com:Jahia/urlrewritefilter.git</developerConnection>
+        <url>https://github.com/Jahia/urlrewritefilter</url>
     </scm>
 
-    <build>
-        <finalName>${artifactId}-${version}</finalName>
-        <sourceDirectory>src/java</sourceDirectory>
-        <testSourceDirectory>src/test</testSourceDirectory>
-        <resources>
-            <resource>
-                <directory>src/java</directory>
-                <excludes>
-                    <exclude>**/*.java</exclude>
-                </excludes>
-            </resource>
-        </resources>
-        <testResources>
-            <testResource>
-                <directory>src/test</directory>
-                <excludes>
-                    <exclude>**/*.java</exclude>
-                </excludes>
-            </testResource>
-        </testResources>
-    </build>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>commons-httpclient</groupId>
+                <artifactId>commons-httpclient</artifactId>
+                <version>${commons-httpclient.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>javax.servlet-api</artifactId>
+                <version>${javax.servlet-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-reload4j</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>3.8.1</version>
-            <scope>compile</scope>
+            <!-- only needed when using the proxy feature -->
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <version>2.4</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>commons-httpclient</groupId>
-            <artifactId>commons-httpclient</artifactId>
-            <version>3.1</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>ant</groupId>
-            <artifactId>ant</artifactId>
-            <version>1.5</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.8</version>
-            <optional>true</optional>
+            <artifactId>javax.servlet-api</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.5.2</version>
-            <optional>true</optional>
+        </dependency>
+        <!-- test dependencies: -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-            <version>1.0</version>
-            <optional>true</optional>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-reload4j</artifactId>
+            <scope>test</scope>
         </dependency>
-
     </dependencies>
-
-    <reporting>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <testExcludes>
-                        <testExclude>**/*ContainerTest.java</testExclude>
-                    </testExcludes>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jxr-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-report-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-pmd-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-docck-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </reporting>
 
 </project>
