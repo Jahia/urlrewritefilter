@@ -100,12 +100,14 @@ public class RuleBase implements Runnable {
     public static final String DEFAULT_MATCH_TYPE = "regex";
 
     private boolean filter = false;
+    private final ClassLoader classLoader;
 
-    /**
-     * Constructor.
-     */
+    public RuleBase(ClassLoader classLoader) {
+        this.classLoader = classLoader;
+    }
+
     public RuleBase() {
-        super();
+        this(null);
         // empty
     }
 
@@ -589,4 +591,8 @@ public class RuleBase implements Runnable {
     public boolean isNoSubstitution() {
 		return noSubstitution;
 	}
+
+    public ClassLoader getClassLoader() {
+        return classLoader;
+    }
 }

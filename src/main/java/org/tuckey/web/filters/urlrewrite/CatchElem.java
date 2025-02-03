@@ -34,17 +34,18 @@
  */
 package org.tuckey.web.filters.urlrewrite;
 
-import org.tuckey.web.filters.urlrewrite.utils.Log;
 import org.tuckey.web.filters.urlrewrite.extend.RewriteMatch;
+import org.tuckey.web.filters.urlrewrite.utils.ClassLoaderUtils;
+import org.tuckey.web.filters.urlrewrite.utils.Log;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.List;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * An item that will allow exceptions during "run" invocation to be caught.
@@ -59,11 +60,20 @@ public class CatchElem implements Runnable {
     private boolean initialised = false;
     private Class exceptionClass;
     private ArrayList runs = new ArrayList();
+    private final ClassLoader classLoader;
 
     /**
      * For testing and documentation we don't want to load the classes.
      */
     private static boolean loadClass = true;
+
+    public CatchElem(ClassLoader classLoader) {
+        this.classLoader = classLoader;
+    }
+
+    public CatchElem() {
+        this(null);
+    }
 
     public static void setLoadClass(boolean loadClass) {
         CatchElem.loadClass = loadClass;
@@ -88,12 +98,9 @@ public class CatchElem implements Runnable {
         }
         if ( loadClass ) {
             try {
-                exceptionClass = Class.forName(classStr);
-            } catch (ClassNotFoundException e) {
-                setError("could not find " + classStr + " got a " + e.toString(), e);
-                return false;
-            } catch (NoClassDefFoundError e) {
-                setError("could not find " + classStr + " got a " + e.toString(), e);
+                exceptionClass = ClassLoaderUtils.loadClass(classStr, classLoader);
+            } catch (ClassNotFoundException | NoClassDefFoundError e) {
+                setError("could not find " + classStr + " got a " + e, e);
                 return false;
             }
         }

@@ -56,9 +56,10 @@ public class OutboundRule extends RuleBase {
     private boolean encodeFirst;
     private boolean encodeToUrl = true;
 
-    /**
-     * Constructor.
-     */
+    public OutboundRule(ClassLoader classLoader) {
+        super(classLoader);
+    }
+
     public OutboundRule() {
         super();
         // empty

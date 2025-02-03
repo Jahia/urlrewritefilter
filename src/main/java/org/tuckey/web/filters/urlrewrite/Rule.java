@@ -89,4 +89,10 @@ public interface Rule {
      */
     public List getErrors();
 
+    /**
+     * Get the classloader for this rule or <code>null</code> if not set (in this case the classloader that loaded this class is used).
+     *
+     * @return the classloader
+     */
+    ClassLoader getClassLoader();
 }

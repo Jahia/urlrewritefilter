@@ -70,9 +70,11 @@ public class NormalRule extends RuleBase implements Rule {
     private String toContextStr = null;
     private ServletContext toServletContext = null;
 
-    /**
-     * Constructor.
-     */
+
+    public NormalRule(ClassLoader classLoader) {
+        super(classLoader);
+    }
+
     public NormalRule() {
         // empty
     }
