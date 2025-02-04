@@ -122,4 +122,17 @@
         </dependency>
     </dependencies>
 
+    <distributionManagement>
+        <repository>
+            <id>thirdparty-releases</id>
+            <name>3rd Party Releases</name>
+            <url>https://devtools.jahia.com/nexus/content/repositories/thirdparty-releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>thirdparty-snapshots</id>
+            <name>3rd Party Snapshots</name>
+            <url>https://devtools.jahia.com/nexus/content/repositories/thirdparty-snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+
 </project>
