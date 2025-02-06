@@ -4,7 +4,7 @@
     <groupId>org.tuckey</groupId>
     <artifactId>urlrewritefilter</artifactId>
     <packaging>jar</packaging>
-    <version>3.2.0-jahia1</version>
+    <version>3.2.0-jahia2-SNAPSHOT</version>
     <name>UrlRewriteFilter (Jahia fork)</name>
     <url>https://tuckey.org/urlrewrite/</url>
     <inceptionYear>2001</inceptionYear>
@@ -40,7 +40,7 @@
         <connection>scm:git:git@github.com:Jahia/urlrewritefilter.git</connection>
         <developerConnection>scm:git:git@github.com:Jahia/urlrewritefilter.git</developerConnection>
         <url>https://github.com/Jahia/urlrewritefilter</url>
-      <tag>urlrewritefilter-3.2.0-jahia1</tag>
+      <tag>HEAD</tag>
   </scm>
 
     <dependencyManagement>
