@@ -45,6 +45,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Locale;
 
 /**
  * @author Paul Tuckey
@@ -90,6 +91,15 @@ public class StatusTest extends TestCase {
         String expected = "Tom &amp; Jerry&#39;s &quot;notes&quot; &lt;draft&gt; été";
 
         MockRequest hsRequest = new MockRequest("/status");
+        hsRequest.setRequestURI("/status/" + value);
+        hsRequest.setContextPath("/" + value);
+        hsRequest.setMethod(value);
+        hsRequest.setAuthType(value);
+        hsRequest.setProtocol(value);
+        hsRequest.setScheme(value);
+        hsRequest.setRemoteAddr(value);
+        hsRequest.setRemoteHost(value);
+        hsRequest.setRequestedSessionId(value);
         hsRequest.setPathInfo("/" + value);
         hsRequest.setPathTranslated("/" + value);
         hsRequest.setQueryString(value);
@@ -99,6 +109,7 @@ public class StatusTest extends TestCase {
         hsRequest.addHeader("x-" + value, value);
         Cookie cookie = new Cookie("c", value);
         cookie.setPath("/" + value);
+        cookie.setDomain(value);
         cookie.setComment(value);
         hsRequest.addCookie(cookie);
         hsRequest.getSession(true).setAttribute("a" + value, value);
@@ -110,6 +121,16 @@ public class StatusTest extends TestCase {
         String html = status.getBuffer().toString();
 
         assertFalse(html, html.contains("<draft>"));
+        assertTrue(html, html.contains("method: " + expected));
+        assertTrue(html, html.contains("auth-type: " + expected));
+        assertTrue(html, html.contains("context-path: /" + expected));
+        assertTrue(html, html.contains("protocol: " + expected));
+        assertTrue(html, html.contains("remote-addr: " + expected));
+        assertTrue(html, html.contains("remote-host: " + expected));
+        assertTrue(html, html.contains("requested-session-id: " + expected));
+        assertTrue(html, html.contains("request-uri: /status/" + expected));
+        assertTrue(html, html.contains("scheme: " + expected));
+        assertTrue(html, html.contains("domain   : " + expected.toLowerCase(Locale.ENGLISH)));
         assertTrue(html, html.contains("path-info: /" + expected));
         assertTrue(html, html.contains("path-translated: /" + expected));
         assertTrue(html, html.contains("query-string: " + expected));
