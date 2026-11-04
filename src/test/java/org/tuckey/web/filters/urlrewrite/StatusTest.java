@@ -39,6 +39,7 @@ import org.tuckey.web.testhelper.MockRequest;
 import org.tuckey.web.testhelper.MockServletContext;
 import org.tuckey.web.filters.urlrewrite.utils.Log;
 
+import javax.servlet.http.Cookie;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -82,6 +83,44 @@ public class StatusTest extends TestCase {
             bos.close();
         }
 
+    }
+
+    public void testRequestInfoShowsSpecialCharactersAsText() {
+        String value = "Tom & Jerry's \"notes\" <draft> été";
+        String expected = "Tom &amp; Jerry&#39;s &quot;notes&quot; &lt;draft&gt; été";
+
+        MockRequest hsRequest = new MockRequest("/status");
+        hsRequest.setPathInfo("/" + value);
+        hsRequest.setPathTranslated("/" + value);
+        hsRequest.setQueryString(value);
+        hsRequest.setRequestURL("http://example.com/" + value);
+        hsRequest.setServerName(value);
+        hsRequest.setRemoteUser(value);
+        hsRequest.addHeader("x-" + value, value);
+        Cookie cookie = new Cookie("c", value);
+        cookie.setPath("/" + value);
+        cookie.setComment(value);
+        hsRequest.addCookie(cookie);
+        hsRequest.getSession(true).setAttribute("a" + value, value);
+
+        InputStream is = ConfTest.class.getResourceAsStream(ConfTest.BASE_XML_PATH + "conf-test1.xml");
+        Conf conf = new Conf(new MockServletContext(), is, "conf-test1.xml", "conf-test1.xml");
+        Status status = new Status(conf, new UrlRewriteFilter());
+        status.displayStatusInContainer(hsRequest);
+        String html = status.getBuffer().toString();
+
+        assertFalse(html, html.contains("<draft>"));
+        assertTrue(html, html.contains("path-info: /" + expected));
+        assertTrue(html, html.contains("path-translated: /" + expected));
+        assertTrue(html, html.contains("query-string: " + expected));
+        assertTrue(html, html.contains("request-url: http://example.com/" + expected));
+        assertTrue(html, html.contains("server-name: " + expected));
+        assertTrue(html, html.contains("remote-user: " + expected));
+        assertTrue(html, html.contains("x-" + expected + ": " + expected));
+        assertTrue(html, html.contains("value    : " + expected));
+        assertTrue(html, html.contains("path     : /" + expected));
+        assertTrue(html, html.contains("comment  : " + expected));
+        assertTrue(html, html.contains("session-attribute a" + expected + ": " + expected));
     }
 
 }

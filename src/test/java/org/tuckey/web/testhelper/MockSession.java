@@ -94,7 +94,7 @@ public class MockSession implements HttpSession {
     }
 
     public Enumeration getAttributeNames() {
-        return null;
+        return attrs.keys();
     }
 
     /**

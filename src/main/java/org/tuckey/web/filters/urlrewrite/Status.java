@@ -96,25 +96,25 @@ public class Status {
         println("<h4>General</h4>");
         println("<pre>");
 
-        println("method: " + hsRequest.getMethod());
-        if (hsRequest.getAuthType() != null) println("auth-type: " + hsRequest.getAuthType());
+        println("method: " + escapeHtml(hsRequest.getMethod()));
+        if (hsRequest.getAuthType() != null) println("auth-type: " + escapeHtml(hsRequest.getAuthType()));
         if (hsRequest.getCharacterEncoding() != null)
-            println("character-encoding: " + hsRequest.getCharacterEncoding());
-        println("context-path: " + hsRequest.getContextPath());
-        if (hsRequest.getPathInfo() != null) println("path-info: " + hsRequest.getPathInfo());
-        if (hsRequest.getPathTranslated() != null) println("path-translated: " + hsRequest.getPathTranslated());
+            println("character-encoding: " + escapeHtml(hsRequest.getCharacterEncoding()));
+        println("context-path: " + escapeHtml(hsRequest.getContextPath()));
+        if (hsRequest.getPathInfo() != null) println("path-info: " + escapeHtml(hsRequest.getPathInfo()));
+        if (hsRequest.getPathTranslated() != null) println("path-translated: " + escapeHtml(hsRequest.getPathTranslated()));
         println("port: " + hsRequest.getServerPort());
-        println("protocol: " + hsRequest.getProtocol());
-        if (hsRequest.getQueryString() != null) println("query-string: " + hsRequest.getQueryString());
-        println("remote-addr: " + hsRequest.getRemoteAddr());
-        println("remote-host: " + hsRequest.getRemoteHost());
-        if (hsRequest.getRemoteUser() != null) println("remote-user: " + hsRequest.getRemoteUser());
+        println("protocol: " + escapeHtml(hsRequest.getProtocol()));
+        if (hsRequest.getQueryString() != null) println("query-string: " + escapeHtml(hsRequest.getQueryString()));
+        println("remote-addr: " + escapeHtml(hsRequest.getRemoteAddr()));
+        println("remote-host: " + escapeHtml(hsRequest.getRemoteHost()));
+        if (hsRequest.getRemoteUser() != null) println("remote-user: " + escapeHtml(hsRequest.getRemoteUser()));
         if (hsRequest.getRequestedSessionId() != null)
-            println("requested-session-id: " + hsRequest.getRequestedSessionId());
-        println("request-uri: " + hsRequest.getRequestURI());
-        println("request-url: " + hsRequest.getRequestURL());
-        println("server-name: " + hsRequest.getServerName());
-        println("scheme: " + hsRequest.getScheme());
+            println("requested-session-id: " + escapeHtml(hsRequest.getRequestedSessionId()));
+        println("request-uri: " + escapeHtml(hsRequest.getRequestURI()));
+        println("request-url: " + escapeHtml(hsRequest.getRequestURL()));
+        println("server-name: " + escapeHtml(hsRequest.getServerName()));
+        println("scheme: " + escapeHtml(hsRequest.getScheme()));
 
         println("</pre>");
 
@@ -125,7 +125,7 @@ public class Status {
             Enumeration enumer = session.getAttributeNames();
             while (enumer.hasMoreElements()) {
                 String name = (String) enumer.nextElement();
-                println("<br />session-attribute " + name + ": " + session.getAttribute(name));
+                println("<br />session-attribute " + escapeHtml(name) + ": " + escapeHtml(session.getAttribute(name)));
             }
         }
 
@@ -137,7 +137,7 @@ public class Status {
             final String headerName = (String) headers.nextElement();
             // ignore cookies as they are handled later
             if ("cookie".equals(headerName)) continue;
-            println(headerName + ": " + hsRequest.getHeader(headerName));
+            println(escapeHtml(headerName) + ": " + escapeHtml(hsRequest.getHeader(headerName)));
         }
         println("</pre>");
 
@@ -149,14 +149,14 @@ public class Status {
                 final Cookie cookie = cookies[i];
                 if (cookie == null) continue;
                 println("<pre>");
-                println("    name     : " + cookie.getName());
-                println("    value    : " + cookie.getValue());
-                println("    path     : " + cookie.getPath());
-                println("    domain   : " + cookie.getDomain());
+                println("    name     : " + escapeHtml(cookie.getName()));
+                println("    value    : " + escapeHtml(cookie.getValue()));
+                println("    path     : " + escapeHtml(cookie.getPath()));
+                println("    domain   : " + escapeHtml(cookie.getDomain()));
                 println("    max age  : " + cookie.getMaxAge());
                 println("    is secure: " + cookie.getSecure());
                 println("    version  : " + cookie.getVersion());
-                println("    comment  : " + cookie.getComment());
+                println("    comment  : " + escapeHtml(cookie.getComment()));
                 println("</pre>");
             }
         }
@@ -547,6 +547,24 @@ public class Status {
     private void println(String s) {
         buffer.append(s);
         println();
+    }
+
+    private static String escapeHtml(Object value) {
+        if (value == null) return "null";
+        String s = value.toString();
+        StringBuilder sb = new StringBuilder(s.length());
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            switch (c) {
+                case '&': sb.append("&amp;"); break;
+                case '<': sb.append("&lt;"); break;
+                case '>': sb.append("&gt;"); break;
+                case '"': sb.append("&quot;"); break;
+                case '\'': sb.append("&#39;"); break;
+                default: sb.append(c);
+            }
+        }
+        return sb.toString();
     }
 
     public StringBuffer getBuffer() {
